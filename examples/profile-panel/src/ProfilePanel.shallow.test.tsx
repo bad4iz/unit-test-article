@@ -3,65 +3,41 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ProfilePanel } from './ProfilePanel';
 import { UserCard } from './UserCard';
-import { useProfile } from './useProfile';
+import { useSetupProfilePanel } from './useSetupProfilePanel';
 
-vi.mock('./useProfile', () => ({ useProfile: vi.fn() }));
+vi.mock('./useSetupProfilePanel', () => ({ useSetupProfilePanel: vi.fn() }));
 
-const mockedUseProfile = vi.mocked(useProfile);
+const mockedSetup = vi.mocked(useSetupProfilePanel);
+const userCardProps = { name: 'Grace Hopper' };
 
 beforeEach(() => {
-  mockedUseProfile.mockReset();
-  mockedUseProfile.mockReturnValue({
-    status: 'ready',
-    profile: { id: 'grace', name: 'Grace Hopper' },
-  });
+  mockedSetup.mockReset();
+  mockedSetup.mockReturnValue({ isLoading: false, userCardProps });
 });
 
-describe('ProfilePanel: изолированные проверки', () => {
-  it('возвращает секцию с заголовком и карточкой', () => {
-    const wrapper = shallow(<ProfilePanel onProfileSelected={vi.fn()} />);
+describe('ProfilePanel: разметка и передача пропсов', () => {
+  it('задаёт подпись секции и текст заголовка', () => {
+    const wrapper = shallow(<ProfilePanel />);
 
-    expect(wrapper.textInline()).toBe('<section><h1>Your profile</h1><UserCard /></section>');
     expect(wrapper.find('section').prop('aria-label')).toBe('Profile');
+    expect(wrapper.find('h1').prop('children')).toBe('Your profile');
   });
 
-  it('передаёт имя из хука в карточку', () => {
-    const wrapper = shallow(<ProfilePanel onProfileSelected={vi.fn()} />);
+  it('передаёт подготовленные пропсы в UserCard', () => {
+    const wrapper = shallow(<ProfilePanel />);
 
-    expect(wrapper.find(UserCard).props()).toEqual({
-      name: 'Grace Hopper',
-      onSelect: expect.any(Function),
+    expect(wrapper.find(UserCard).props()).toEqual(userCardProps);
+  });
+
+  it('передаёт пропсы сообщению о загрузке и не выводит карточку', () => {
+    mockedSetup.mockReturnValue({ isLoading: true, userCardProps: null });
+
+    const wrapper = shallow(<ProfilePanel />);
+
+    expect(wrapper.find('p').props()).toEqual({
+      role: 'status',
+      children: 'Loading profile...',
     });
-  });
-
-  it('передаёт id выбранного профиля в родительский callback', () => {
-    const onProfileSelected = vi.fn();
-    const wrapper = shallow(<ProfilePanel onProfileSelected={onProfileSelected} />);
-    const onSelect: unknown = wrapper.find(UserCard).prop('onSelect');
-
-    if (typeof onSelect !== 'function') {
-      throw new TypeError('Ожидалась функция UserCard.onSelect');
-    }
-
-    onSelect();
-
-    expect(onProfileSelected).toHaveBeenCalledExactlyOnceWith('grace');
-  });
-
-  it('показывает загрузку вместо карточки', () => {
-    mockedUseProfile.mockReturnValue({ status: 'loading' });
-
-    const wrapper = shallow(<ProfilePanel onProfileSelected={vi.fn()} />);
-
-    expect(wrapper.textInline()).toBe('<p>Loading profile...</p>');
-    expect(wrapper.find('p').prop('role')).toBe('status');
     expect(wrapper.find(UserCard).exists()).toBe(false);
-  });
-
-  it('оставляет UserCard на границе, не выполняя его useState', () => {
-    const wrapper = shallow(<ProfilePanel onProfileSelected={vi.fn()} />);
-
-    expect(wrapper.find(UserCard).textInline()).toBe('<UserCard />');
-    expect(wrapper.find('button').exists()).toBe(false);
   });
 });

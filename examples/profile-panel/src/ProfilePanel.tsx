@@ -1,21 +1,17 @@
 import { UserCard } from './UserCard';
-import { useProfile } from './useProfile';
+import { useSetupProfilePanel } from './useSetupProfilePanel';
 
-export interface ProfilePanelProps {
-  onProfileSelected: (profileId: string) => void;
-}
+export function ProfilePanel() {
+  const { isLoading, userCardProps } = useSetupProfilePanel();
 
-export function ProfilePanel({ onProfileSelected }: ProfilePanelProps) {
-  const state = useProfile();
-
-  if (state.status === 'loading') {
+  if (isLoading) {
     return <p role="status">Loading profile...</p>;
   }
 
   return (
     <section aria-label="Profile">
       <h1>Your profile</h1>
-      <UserCard name={state.profile.name} onSelect={() => onProfileSelected(state.profile.id)} />
+      <UserCard {...userCardProps} />
     </section>
   );
 }
