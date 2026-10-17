@@ -1,9 +1,14 @@
 <!--
-status: draft
+status: published
 habr_url: https://habr.com/ru/articles/419533/
+published_at: 2018-08-07
+updated_at: 2026-10-17
 synced_at: 2026-10-17
 task_branch: codex/edit-null-comparison-article
 source_author: Abinav Seelan
+cover: assets/null-comparison/illustration.jpg
+cover_url: https://habrastorage.org/extt/1f/69/88/1f69889536a2de68d317d528ea1b9794.jpg
+feed_excerpt: Почему null > 0 и null == 0 возвращают false, а null >= 0 — true? Разбираем преобразования типов на коротких примерах и сверяемся со спецификацией ECMAScript. Заодно проверим, почему >= нельзя просто заменить на отрицание <.
 source_url: https://blog.campvanilla.com/javascript-the-curious-case-of-null-0-7b131644e274
 -->
 
@@ -22,6 +27,8 @@ null >= 0; // true
 Получается, `null` не больше нуля и не равен ему, но при этом больше либо равен. На вид какая-то ерунда. Чтобы разобраться, нужно посмотреть, какие правила использует каждый оператор.
 
 <cut />
+
+![Три сравнения null с нулём: false, false и true](https://habrastorage.org/extt/1f/69/88/1f69889536a2de68d317d528ea1b9794.jpg)
 
 У `==` и операторов `<`, `>`, `<=`, `>=` разные правила преобразования типов. А запись `a >= b` не означает, что JavaScript по очереди проверит `a > b` и `a == b`.
 

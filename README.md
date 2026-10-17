@@ -18,7 +18,7 @@
 
 ## Другие статьи и переводы
 
-[Почему в JavaScript null >= 0 — true, а null == 0 — false](javascript_null_comparison.md) — [черновик на Хабре](https://habr.com/ru/articles/419533/). Перевод статьи Abinav Seelan с сокращённым разбором алгоритмов, актуальными ссылками на ECMAScript и примечанием про `NaN`. Текущая редактура ведётся в ветке `codex/edit-null-comparison-article`.
+[Почему в JavaScript null >= 0 — true, а null == 0 — false](javascript_null_comparison.md) — [опубликована на Хабре](https://habr.com/ru/articles/419533/), обновлена 2026-10-17; исходная дата публикации 2018-08-07 сохранена. Перевод статьи Abinav Seelan с сокращённым разбором алгоритмов, актуальными ссылками на ECMAScript и примечанием про `NaN`. Иллюстрация сохранена в [assets/null-comparison](assets/null-comparison). Текущая редактура ведётся в ветке `codex/edit-null-comparison-article`.
 
 ## Архивные черновики
 
