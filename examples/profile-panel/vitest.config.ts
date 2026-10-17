@@ -1,9 +1,12 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  esbuild: {
+    jsx: 'automatic',
+  },
   test: {
     environment: 'node',
-    include: ['src/**/*.test.tsx'],
+    include: ['src/**/*.test.jsx'],
     mockReset: true,
     restoreMocks: true,
     setupFiles: ['./vitest.setup.ts'],

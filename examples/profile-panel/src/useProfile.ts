@@ -11,7 +11,7 @@ export function useProfile(): ProfileState {
   // Данные локальные: запросы к серверу здесь не разбираем.
   const [state] = useState<ProfileState>({
     status: 'ready',
-    profile: { id: 'ada', name: 'Ada Lovelace' },
+    profile: { id: 'demo-profile', name: 'имя из профиля' },
   });
 
   return state;

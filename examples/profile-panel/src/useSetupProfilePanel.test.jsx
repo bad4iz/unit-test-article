@@ -6,14 +6,17 @@ import { describe, expect, it, vi } from 'vitest';
 import { useProfile } from './useProfile';
 import { useSetupProfilePanel } from './useSetupProfilePanel';
 
-vi.mock('./useProfile', () => ({ useProfile: vi.fn() }));
+vi.mock('./useProfile');
 
-const mockedUseProfile = vi.mocked(useProfile);
-
+/**
+ * Задаёт готовый профиль как исходное состояние источника данных.
+ *
+ * @returns {void}
+ */
 const mockDefault = () => {
-  mockedUseProfile.mockReturnValue({
+  useProfile.mockReturnValue({
     status: 'ready',
-    profile: { id: 'grace', name: 'Grace Hopper' },
+    profile: { id: 'default-profile', name: 'имя по умолчанию' },
   });
 };
 
@@ -23,6 +26,10 @@ describe('🐛 spec useSetupProfilePanel', () => {
 
     //☣️ Arrange
     mockDefault();
+    useProfile.mockReturnValue({
+      status: 'ready',
+      profile: { id: 'test-profile', name: 'имя из хука' },
+    });
 
     //🔥 Act
     const { result } = renderHook(() => useSetupProfilePanel());
@@ -30,7 +37,7 @@ describe('🐛 spec useSetupProfilePanel', () => {
     //❓ Assert
     expect(result.current).toEqual({
       isLoading: false,
-      userCardProps: { name: 'Grace Hopper' },
+      userCardProps: { name: 'имя из хука' },
     });
   });
 
@@ -39,7 +46,7 @@ describe('🐛 spec useSetupProfilePanel', () => {
 
     //☣️ Arrange
     mockDefault();
-    mockedUseProfile.mockReturnValue({ status: 'loading' });
+    useProfile.mockReturnValue({ status: 'loading' });
 
     //🔥 Act
     const { result } = renderHook(() => useSetupProfilePanel());

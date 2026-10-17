@@ -17,7 +17,7 @@ describe('🐛 spec ProfilePanel: взаимодействие с карточк
     render(<ProfilePanel />);
 
     //❓ Assert
-    expect(screen.getByRole('heading', { name: 'Ada Lovelace' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'имя из профиля' })).toBeTruthy();
     expect(screen.queryByText('Profile details')).toBeNull();
 
     //🔥 Act

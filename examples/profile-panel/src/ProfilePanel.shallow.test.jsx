@@ -5,13 +5,18 @@ import { ProfilePanel } from './ProfilePanel';
 import { UserCard } from './UserCard';
 import { useSetupProfilePanel } from './useSetupProfilePanel';
 
-vi.mock('./useSetupProfilePanel', () => ({ useSetupProfilePanel: vi.fn() }));
+vi.mock('./useSetupProfilePanel');
 
-const mockedSetup = vi.mocked(useSetupProfilePanel);
-const userCardProps = { name: 'Grace Hopper' };
-
+/**
+ * Задаёт готовый профиль для тестов, которым не нужен особый ответ хука.
+ *
+ * @returns {void}
+ */
 const mockDefault = () => {
-  mockedSetup.mockReturnValue({ isLoading: false, userCardProps });
+  useSetupProfilePanel.mockReturnValue({
+    isLoading: false,
+    userCardProps: { name: 'имя по умолчанию' },
+  });
 };
 
 describe('🐛 spec ProfilePanel', () => {
@@ -34,6 +39,8 @@ describe('🐛 spec ProfilePanel', () => {
 
     //☣️ Arrange
     mockDefault();
+    const userCardProps = { name: 'имя из хука' };
+    useSetupProfilePanel.mockReturnValue({ isLoading: false, userCardProps });
 
     //🔥 Act
     const wrapper = shallow(<ProfilePanel />);
@@ -47,7 +54,7 @@ describe('🐛 spec ProfilePanel', () => {
 
     //☣️ Arrange
     mockDefault();
-    mockedSetup.mockReturnValue({ isLoading: true, userCardProps: null });
+    useSetupProfilePanel.mockReturnValue({ isLoading: true, userCardProps: null });
 
     //🔥 Act
     const wrapper = shallow(<ProfilePanel />);
