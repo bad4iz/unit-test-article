@@ -4,7 +4,7 @@ created_at: 2026-10-17
 habr_url: https://habr.com/ru/articles/1095628/
 task_branch: codex/shallowly-practical-article
 example: examples/profile-panel
-example_ref: profile-panel-article-v1
+example_ref: profile-panel-article-v2
 -->
 
 # React 19, Shallowly и Vitest: отделяем логику от разметки и тестируем пропсы
@@ -107,15 +107,17 @@ export function ProfilePanel() {
 
 Вот и весь рефакторинг: чтение данных и их подготовка ушли в setup-хук, выбор разметки остался в компоненте. Поведение панели то же самое. Такое разделение мне полезно и без тестов. Заодно теперь можно отдельно проверять подготовку данных и отдельно — куда компонент их прокинул.
 
-## Теперь тестируем передачу пропсов
+## Теперь тестируем компонент
 
-В shallow-тесте панели я замокаю `useSetupProfilePanel`. Задам готовый результат и проверю, что пропсы попали в нужные элементы. Как хук получил имя и почему решил, что загрузка закончилась, здесь меня не интересует: это уже его работа.
+Входных пропсов у `ProfilePanel` нет: тест рендерит его как `<ProfilePanel />`. Данные приходят из `useSetupProfilePanel`, а панель передаёт их дальше — в `UserCard` через `userCardProps`. Вот эту передачу и проверим: имя из хука должно попасть в карточку. Заодно проверим заголовок, подпись секции и сообщение о загрузке.
+
+В shallow-тесте замокаю `useSetupProfilePanel` и задам готовый результат. Как хук получил имя и почему решил, что загрузка закончилась, здесь меня не интересует: это проверим отдельно в тестах хука.
 
 `ProfilePanel.shallow.test.tsx` целиком:
 
 ```typescript
 import { shallow } from 'shallowly';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ProfilePanel } from './ProfilePanel';
 import { UserCard } from './UserCard';
@@ -126,30 +128,49 @@ vi.mock('./useSetupProfilePanel', () => ({ useSetupProfilePanel: vi.fn() }));
 const mockedSetup = vi.mocked(useSetupProfilePanel);
 const userCardProps = { name: 'Grace Hopper' };
 
-beforeEach(() => {
-  mockedSetup.mockReset();
+const mockDefault = () => {
   mockedSetup.mockReturnValue({ isLoading: false, userCardProps });
-});
+};
 
-describe('ProfilePanel: разметка и передача пропсов', () => {
-  it('задаёт подпись секции и текст заголовка', () => {
+describe('🐛 spec ProfilePanel', () => {
+  it('🧪 задаёт подпись секции и текст заголовка', () => {
+    expect.hasAssertions();
+
+    //☣️ Arrange
+    mockDefault();
+
+    //🔥 Act
     const wrapper = shallow(<ProfilePanel />);
 
+    //❓ Assert
     expect(wrapper.find('section').prop('aria-label')).toBe('Profile');
     expect(wrapper.find('h1').prop('children')).toBe('Your profile');
   });
 
-  it('передаёт подготовленные пропсы в UserCard', () => {
+  it('🧪 передаёт подготовленные пропсы в UserCard', () => {
+    expect.hasAssertions();
+
+    //☣️ Arrange
+    mockDefault();
+
+    //🔥 Act
     const wrapper = shallow(<ProfilePanel />);
 
+    //❓ Assert
     expect(wrapper.find(UserCard).props()).toEqual(userCardProps);
   });
 
-  it('передаёт пропсы сообщению о загрузке и не выводит карточку', () => {
+  it('🧪 показывает сообщение о загрузке без карточки', () => {
+    expect.hasAssertions();
+
+    //☣️ Arrange
+    mockDefault();
     mockedSetup.mockReturnValue({ isLoading: true, userCardProps: null });
 
+    //🔥 Act
     const wrapper = shallow(<ProfilePanel />);
 
+    //❓ Assert
     expect(wrapper.find('p').props()).toEqual({
       role: 'status',
       children: 'Loading profile...',
@@ -159,7 +180,11 @@ describe('ProfilePanel: разметка и передача пропсов', ()
 });
 ```
 
-Сначала проверили пропсы секции и заголовка. Текст заголовка в React тоже пропс — `children`. Потом нашли именно `UserCard` и сравнили переданные ему пропсы с `userCardProps` из замоканного хука.
+В начале каждого теста вызываю `mockDefault()`: он задаёт обычный ответ setup-хука. Если нужен другой сценарий, меняю ответ прямо в этом тесте. Подготовка, действие и проверки разнесены по блокам Arrange / Act / Assert.
+
+Сброс моков выполняет Vitest: в конфиге примера включён [`mockReset: true`](https://vitest.dev/config/mockreset). Поэтому ручных сбросов и `beforeEach` в тестовом файле нет.
+
+Сначала проверили подпись секции и текст заголовка. В React это тоже пропсы элементов: `aria-label` и `children`. Потом нашли именно `UserCard` и сравнили переданные ему пропсы с `userCardProps` из замоканного хука.
 
 В данных специально Grace Hopper, а в настоящем `useProfile` лежит Ada Lovelace. Если при правке компонента вместо спреда захардкодить имя, проверка передачи пропсов это заметит. Один только TypeScript такую подмену пропустит: тип по-прежнему `string`.
 
@@ -171,20 +196,20 @@ describe('ProfilePanel: разметка и передача пропсов', ()
 
 ## А подготовку данных и карточку?
 
-Разделение кода дало и понятные границы проверок. Для `useSetupProfilePanel` рядом есть [два теста через renderHook](https://github.com/bad4iz/unit-test-article/blob/profile-panel-article-v1/examples/profile-panel/src/useSetupProfilePanel.test.tsx). Там подменяется `useProfile` и проверяется, что из готового профиля получаются нужные пропсы, а во время загрузки — признак загрузки и `null` вместо них.
+Разделение кода дало и понятные границы проверок. Для `useSetupProfilePanel` рядом есть [два теста через renderHook](https://github.com/bad4iz/unit-test-article/blob/profile-panel-article-v2/examples/profile-panel/src/useSetupProfilePanel.test.tsx). Там подменяется `useProfile` и проверяется, что из готового профиля получаются нужные пропсы, а во время загрузки — признак загрузки и `null` вместо них.
 
 В shallow-тесты панели эта логика не переезжает. Тест компонента отвечает за то, куда попали подготовленные пропсы. Если позже в setup-хуке появится обработчик, его поведение тоже проверяется в тестах хука. В тесте компонента достаточно будет проверить, что функция передана нужному элементу.
 
-В [DOM-тесте](https://github.com/bad4iz/unit-test-article/blob/profile-panel-article-v1/examples/profile-panel/src/ProfilePanel.dom.test.tsx) панель рендерится с настоящими хуками и `UserCard`. Он проверяет, что кнопка карточки раскрывает и скрывает детали. Там уже работает React и меняется DOM. Проверка идёт в jsdom, настоящий браузер не запускается.
+В [DOM-тесте](https://github.com/bad4iz/unit-test-article/blob/profile-panel-article-v2/examples/profile-panel/src/ProfilePanel.dom.test.tsx) панель рендерится с настоящими хуками и `UserCard`. Он проверяет, что кнопка карточки раскрывает и скрывает детали. Там уже работает React и меняется DOM. Проверка идёт в jsdom, настоящий браузер не запускается.
 
 Для меня такой расклад понятен: подготовка данных отдельно, разметка отдельно, пользовательское взаимодействие — своей проверкой. В каждом тесте меньше поводов разбираться со всем компонентом сразу.
 
 ## Забрать и запустить
 
-[Полный пример](https://github.com/bad4iz/unit-test-article/tree/profile-panel-article-v1/examples/profile-panel) закреплён тегом `profile-panel-article-v1`, чтобы команды и ссылки не зависели от судьбы рабочей ветки:
+[Полный пример](https://github.com/bad4iz/unit-test-article/tree/profile-panel-article-v2/examples/profile-panel) закреплён тегом `profile-panel-article-v2`, чтобы команды и ссылки не зависели от судьбы рабочей ветки:
 
 ```bash
-git clone --branch profile-panel-article-v1 --single-branch https://github.com/bad4iz/unit-test-article.git
+git clone --branch profile-panel-article-v2 --single-branch https://github.com/bad4iz/unit-test-article.git
 cd unit-test-article/examples/profile-panel
 npm ci
 npm test

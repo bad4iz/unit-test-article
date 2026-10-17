@@ -1,23 +1,35 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { ProfilePanel } from './ProfilePanel';
 
-afterEach(cleanup);
+describe('🐛 spec ProfilePanel: взаимодействие с карточкой', () => {
+  it('🧪 раскрывает и скрывает детали карточки по нажатию кнопки', async () => {
+    expect.hasAssertions();
 
-it('раскрывает и скрывает детали карточки по нажатию кнопки', async () => {
-  const user = userEvent.setup();
-  render(<ProfilePanel />);
+    //☣️ Arrange
+    const user = userEvent.setup();
 
-  expect(screen.getByRole('heading', { name: 'Ada Lovelace' })).toBeTruthy();
-  expect(screen.queryByText('Profile details')).toBeNull();
+    //🔥 Act
+    render(<ProfilePanel />);
 
-  await user.click(screen.getByRole('button', { name: 'Show details' }));
-  expect(screen.getByText('Profile details')).toBeTruthy();
+    //❓ Assert
+    expect(screen.getByRole('heading', { name: 'Ada Lovelace' })).toBeTruthy();
+    expect(screen.queryByText('Profile details')).toBeNull();
 
-  await user.click(screen.getByRole('button', { name: 'Hide details' }));
-  expect(screen.queryByText('Profile details')).toBeNull();
+    //🔥 Act
+    await user.click(screen.getByRole('button', { name: 'Show details' }));
+
+    //❓ Assert
+    expect(screen.getByText('Profile details')).toBeTruthy();
+
+    //🔥 Act
+    await user.click(screen.getByRole('button', { name: 'Hide details' }));
+
+    //❓ Assert
+    expect(screen.queryByText('Profile details')).toBeNull();
+  });
 });
