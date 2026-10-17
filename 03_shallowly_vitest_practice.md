@@ -15,7 +15,7 @@ example_ref: profile-panel-article-v1
 
 ## Исходный компонент
 
-```js
+```javascript
 import { UserCard } from './UserCard';
 import { useProfile } from './useProfile';
 
@@ -83,7 +83,7 @@ export function useSetupProfilePanel() {
 
 В `ProfilePanel.tsx` остаётся:
 
-```tsx
+```typescript
 import { UserCard } from './UserCard';
 import { useSetupProfilePanel } from './useSetupProfilePanel';
 
@@ -113,7 +113,7 @@ export function ProfilePanel() {
 
 `ProfilePanel.shallow.test.tsx` целиком:
 
-```tsx
+```typescript
 import { shallow } from 'shallowly';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
