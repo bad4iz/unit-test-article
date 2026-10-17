@@ -1,45 +1,25 @@
 <!--
 status: draft
 created_at: 2026-10-17
+habr_url: https://habr.com/ru/articles/1095628/
 task_branch: codex/shallowly-practical-article
 example: examples/profile-panel
+example_ref: profile-panel-article-v1
 -->
 
-# React 19, Shallowly и Vitest: тестируем props, хуки и callbacks
+# React 19, Shallowly и Vitest: отделяем логику от разметки и тестируем пропсы
 
-Есть довольно бесячий класс багов: карточка выглядит нормально, кнопка нажимается, а наверх уезжает имя пользователя вместо его id. TypeScript доволен: и то и другое — `string`. Если бэк ещё замокан, можно какое-то время вообще не замечать подмены.
+В [прошлой статье](https://habr.com/ru/articles/927596/) я показал короткий тест с передачей пропсов. Теперь разберу компонент чуть подробнее: сначала приведу код к тому виду, в котором мне удобно с ним работать, а потом проверю его через свою библиотеку [Shallowly](https://www.npmjs.com/package/shallowly).
 
-В [прошлой статье](https://habr.com/ru/articles/927596/) я показал короткий тест с передачей пропсов. Теперь возьму компонент с хуком и несколькими ветками, проверю его через свою библиотеку [Shallowly](https://www.npmjs.com/package/shallowly), а затем добавлю проверку через DOM. На одном примере будет видно, какой косяк ловит каждый тест.
+Начнём с панели профиля. Пока данные грузятся, она показывает сообщение. Когда профиль готов — передаёт имя в карточку. Входных пропсов у самой панели пока нет, усложнять пример ими не будем.
 
-## Сначала запустим
+## Исходный компонент
 
-Весь пример лежит [в репозитории статьи](https://github.com/bad4iz/unit-test-article/tree/codex/shallowly-practical-article/examples/profile-panel). Можно сразу забрать и прогнать:
-
-```bash
-git clone --branch codex/shallowly-practical-article --single-branch https://github.com/bad4iz/unit-test-article.git
-cd unit-test-article/examples/profile-panel
-npm ci
-npm test
-npm run typecheck
-```
-
-Для этого примера подойдёт Node.js 22 от версии 22.12 или Node.js 24. Версии зависимостей зафиксированы: React 19.2.4, Shallowly 1.1.1, Vitest 4.0.18. В проекте два файла с тестами: пять изолированных проверок и две через DOM. Настройка TypeScript и JSX уже внутри, руками собирать конфиг не придётся.
-
-## Панель профиля и её работа
-
-Компонент небольшой. Пока профиль грузится, показывает сообщение. Когда данные готовы — передаёт имя в `UserCard`. При выборе карточки вызывает внешний обработчик с id пользователя.
-
-`ProfilePanel.tsx`:
-
-```tsx
+```js
 import { UserCard } from './UserCard';
 import { useProfile } from './useProfile';
 
-export interface ProfilePanelProps {
-  onProfileSelected: (profileId: string) => void;
-}
-
-export function ProfilePanel({ onProfileSelected }: ProfilePanelProps) {
+export function ProfilePanel() {
   const state = useProfile();
 
   if (state.status === 'loading') {
@@ -49,29 +29,89 @@ export function ProfilePanel({ onProfileSelected }: ProfilePanelProps) {
   return (
     <section aria-label="Profile">
       <h1>Your profile</h1>
-      <UserCard name={state.profile.name} onSelect={() => onProfileSelected(state.profile.id)} />
+      <UserCard name={state.profile.name} />
     </section>
   );
 }
 ```
 
-Сама карточка умеет раскрывать детали через `useState` и содержит кнопку `Select profile`. Её исходник — [UserCard.tsx](https://github.com/bad4iz/unit-test-article/blob/codex/shallowly-practical-article/examples/profile-panel/src/UserCard.tsx). Для теста панели меня пока интересуют две вещи: какое имя в карточку прилетело и какой обработчик ей передали. До кнопок дойдём в DOM-тесте.
+`useProfile` возвращает либо `{ status: 'loading' }`, либо `{ status: 'ready', profile }`. В примере внутри него обычный `useState` с локальным профилем Ada Lovelace. Запросов к бэку здесь нет. `UserCard` принимает `name` и умеет раскрывать детали через свой `useState`.
 
-Хук `useProfile` в этом учебном проекте хранит локальные данные через `useState`. Он сразу возвращает профиль Ada Lovelace. Запросов к серверу здесь нет: возня с API только раздула бы пример. Состояний у хука два:
+## Тесты и архитектура
 
-```ts
-export type ProfileState = { status: 'loading' } | { status: 'ready'; profile: Profile };
+Тесты не должны диктовать архитектуру проекта. Если ради удобства одной библиотеки приходится выворачивать рабочий код наизнанку, я бы сначала посмотрел на сам способ тестирования. Но это не мешает менять архитектуру в лучшую сторону. У более понятного кода и тесты часто получаются проще.
+
+В нашей панели вместе живут разметка и подготовка данных для неё. Сейчас это несколько строк. В рабочем компоненте к ним легко добавляются вычисления, проверки прав, обработка ошибок. Всё это приходится читать вперемешку с JSX. Я хочу, чтобы у подготовки данных было своё место, а в компоненте было видно, какие элементы он собирает и что им передаёт.
+
+Если назвать знакомые принципы и приёмы, здесь получается вот что:
+
+- **Separation of Concerns — разделение задач.** Подготовка данных живёт в хуке, разметка — в компоненте. В JSX больше не нужно разбираться в устройстве результата `useProfile`.
+- **Single Responsibility Principle — более узкая ответственность.** Изменение разметки относится к компоненту, изменение способа подготовки данных — к setup-хуку. Это разные причины менять код.
+- **Инкапсуляция в custom hook.** Хук возвращает то, что нужно конкретной панели: признак загрузки и готовые пропсы карточки. Детали источника данных остаются внутри. Такой вынос логики в custom hooks описан и в [документации React](https://react.dev/learn/reusing-logic-with-custom-hooks).
+
+По смыслу это близко к разделению container/presentational: подготовкой данных занимается setup-хук, представлением — компонент. `useSetupProfilePanel` здесь моё соглашение об имени хука для этой панели. Ему не обязательно становиться универсальным или использоваться ещё в десяти местах.
+
+Сам пример нарочно маленький: выигрыш здесь в понятных границах, а не в количестве строк. Если позже потребуется форматировать имя для карточки, у этой работы уже будет своё место. Поменять контейнер или заголовок можно будет в компоненте, не разбираясь заодно с подготовкой данных.
+
+## Выносим подготовку данных
+
+Добавим `useSetupProfilePanel.ts`:
+
+```typescript
+import { useProfile } from './useProfile';
+
+export function useSetupProfilePanel() {
+  const state = useProfile();
+
+  if (state.status === 'loading') {
+    return {
+      isLoading: true as const,
+      userCardProps: null,
+    };
+  }
+
+  return {
+    isLoading: false as const,
+    userCardProps: {
+      name: state.profile.name,
+    },
+  };
+}
 ```
 
-У `Profile` есть `id` и `name`, оба — строки. Их намеренно легко перепутать, при этом проверка типов ничего не заметит.
+Теперь исходный `state.status` превращается в понятный панели `isLoading`, а имя собирается в `userCardProps`. В состоянии загрузки пропсов карточки ещё нет. `as const` сохраняет для TypeScript значения `true` и `false` в качестве признаков двух вариантов результата. После проверки `isLoading` он понимает, что `userCardProps` уже не `null`.
 
-## Замокаем хук, карточку оставим
+В `ProfilePanel.tsx` остаётся:
 
-Shallowly выполняет компонент под тестом и даёт посмотреть на возвращённые React-элементы. Внутрь дочерних компонентов он не заходит. Поэтому `UserCard` здесь останется элементом с пропсами, а его `useState` вообще не запустится.
+```tsx
+import { UserCard } from './UserCard';
+import { useSetupProfilePanel } from './useSetupProfilePanel';
 
-С `useProfile` другая история: его вызывает сама панель. Для такого теста я подменяю результат хука. Shallowly не создаёт окружение для настоящего React-состояния и эффектов; без подмены этот вызов `useState` работать не будет. Про то, почему вызов компонента и React-рендер — разные вещи, есть [пояснение в документации React](https://react.dev/reference/rules/react-calls-components-and-hooks).
+export function ProfilePanel() {
+  const { isLoading, userCardProps } = useSetupProfilePanel();
 
-Начало `ProfilePanel.shallow.test.tsx`:
+  if (isLoading) {
+    return <p role="status">Loading profile...</p>;
+  }
+
+  return (
+    <section aria-label="Profile">
+      <h1>Your profile</h1>
+      <UserCard {...userCardProps} />
+    </section>
+  );
+}
+```
+
+Всё нужное достал через деструктуризацию. Сообщение о загрузке, секция, заголовок и карточка остались на месте. Только вместо обращения к `state.profile.name` компонент передаёт в `UserCard` подготовленные пропсы.
+
+Вот и весь рефакторинг: чтение данных и их подготовка ушли в setup-хук, выбор разметки остался в компоненте. Поведение панели то же самое. Такое разделение мне полезно и без тестов. Заодно теперь можно отдельно проверять подготовку данных и отдельно — куда компонент их прокинул.
+
+## Теперь тестируем передачу пропсов
+
+В shallow-тесте панели я замокаю `useSetupProfilePanel`. Задам готовый результат и проверю, что пропсы попали в нужные элементы. Как хук получил имя и почему решил, что загрузка закончилась, здесь меня не интересует: это уже его работа.
+
+`ProfilePanel.shallow.test.tsx` целиком:
 
 ```tsx
 import { shallow } from 'shallowly';
@@ -79,163 +119,78 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ProfilePanel } from './ProfilePanel';
 import { UserCard } from './UserCard';
-import { useProfile } from './useProfile';
+import { useSetupProfilePanel } from './useSetupProfilePanel';
 
-vi.mock('./useProfile', () => ({ useProfile: vi.fn() }));
+vi.mock('./useSetupProfilePanel', () => ({ useSetupProfilePanel: vi.fn() }));
 
-const mockedUseProfile = vi.mocked(useProfile);
+const mockedSetup = vi.mocked(useSetupProfilePanel);
+const userCardProps = { name: 'Grace Hopper' };
 
 beforeEach(() => {
-  mockedUseProfile.mockReset();
-  mockedUseProfile.mockReturnValue({
-    status: 'ready',
-    profile: { id: 'grace', name: 'Grace Hopper' },
+  mockedSetup.mockReset();
+  mockedSetup.mockReturnValue({ isLoading: false, userCardProps });
+});
+
+describe('ProfilePanel: разметка и передача пропсов', () => {
+  it('задаёт подпись секции и текст заголовка', () => {
+    const wrapper = shallow(<ProfilePanel />);
+
+    expect(wrapper.find('section').prop('aria-label')).toBe('Profile');
+    expect(wrapper.find('h1').prop('children')).toBe('Your profile');
+  });
+
+  it('передаёт подготовленные пропсы в UserCard', () => {
+    const wrapper = shallow(<ProfilePanel />);
+
+    expect(wrapper.find(UserCard).props()).toEqual(userCardProps);
+  });
+
+  it('передаёт пропсы сообщению о загрузке и не выводит карточку', () => {
+    mockedSetup.mockReturnValue({ isLoading: true, userCardProps: null });
+
+    const wrapper = shallow(<ProfilePanel />);
+
+    expect(wrapper.find('p').props()).toEqual({
+      role: 'status',
+      children: 'Loading profile...',
+    });
+    expect(wrapper.find(UserCard).exists()).toBe(false);
   });
 });
 ```
 
-Карточку я не мокал. Заменил только модуль хука и перед каждым тестом задаю его результат. В тестовых данных специально другой пользователь: так будет видно, если панель перестанет брать имя из хука и начнёт возвращать захардкоженное значение.
+Сначала проверили пропсы секции и заголовка. Текст заголовка в React тоже пропс — `children`. Потом нашли именно `UserCard` и сравнили переданные ему пропсы с `userCardProps` из замоканного хука.
 
-`vi.mocked` здесь помогает TypeScript понять тип мока; саму подмену делает `vi.mock`. Vitest [поднимает этот вызов до импортов](https://vitest.dev/api/vi.html#vi-mock), поэтому импортированный `ProfilePanel` тоже получит подменённый `useProfile`.
+В данных специально Grace Hopper, а в настоящем `useProfile` лежит Ada Lovelace. Если при правке компонента вместо спреда захардкодить имя, проверка передачи пропсов это заметит. Один только TypeScript такую подмену пропустит: тип по-прежнему `string`.
 
-Дальше идут обычные `it` — в файле они собраны в один `describe`.
+В последнем тесте поменяли результат setup-хука: идёт загрузка, пропсов карточки нет. Проверили `role` и `children` у сообщения, а также отсутствие `UserCard`. Во всём компоненте не приходится искать строковые снимки разметки и переписывать их из-за каждого нового контейнера.
 
-## Проверяем имя и callback
+`vi.mocked` помогает TypeScript с типом мока, а сам модуль подменяет `vi.mock`. Vitest [поднимает этот вызов до импортов](https://vitest.dev/api/vi.html#vi-mock), поэтому панель получает подменённый setup-хук.
 
-Сначала пропсы карточки:
+У Shallowly здесь узкая работа: выполнить компонент и дать посмотреть на возвращённые React-элементы и их пропсы. Тело `UserCard` он не выполняет, её внутренний `useState` не запускает. Подменён и setup-хук, который при настоящем вызове дошёл бы до `useState` внутри `useProfile`. Это не полный React-рендер; про роль React в вызове компонентов и хуков есть [отдельное пояснение в документации](https://react.dev/reference/rules/react-calls-components-and-hooks).
 
-```tsx
-it('передаёт имя из хука в карточку', () => {
-  const wrapper = shallow(<ProfilePanel onProfileSelected={vi.fn()} />);
+## А подготовку данных и карточку?
 
-  expect(wrapper.find(UserCard).props()).toEqual({
-    name: 'Grace Hopper',
-    onSelect: expect.any(Function),
-  });
-});
+Разделение кода дало и понятные границы проверок. Для `useSetupProfilePanel` рядом есть [два теста через renderHook](https://github.com/bad4iz/unit-test-article/blob/profile-panel-article-v1/examples/profile-panel/src/useSetupProfilePanel.test.tsx). Там подменяется `useProfile` и проверяется, что из готового профиля получаются нужные пропсы, а во время загрузки — признак загрузки и `null` вместо них.
+
+В shallow-тесты панели эта логика не переезжает. Тест компонента отвечает за то, куда попали подготовленные пропсы. Если позже в setup-хуке появится обработчик, его поведение тоже проверяется в тестах хука. В тесте компонента достаточно будет проверить, что функция передана нужному элементу.
+
+В [DOM-тесте](https://github.com/bad4iz/unit-test-article/blob/profile-panel-article-v1/examples/profile-panel/src/ProfilePanel.dom.test.tsx) панель рендерится с настоящими хуками и `UserCard`. Он проверяет, что кнопка карточки раскрывает и скрывает детали. Там уже работает React и меняется DOM. Проверка идёт в jsdom, настоящий браузер не запускается.
+
+Для меня такой расклад понятен: подготовка данных отдельно, разметка отдельно, пользовательское взаимодействие — своей проверкой. В каждом тесте меньше поводов разбираться со всем компонентом сразу.
+
+## Забрать и запустить
+
+[Полный пример](https://github.com/bad4iz/unit-test-article/tree/profile-panel-article-v1/examples/profile-panel) закреплён тегом `profile-panel-article-v1`, чтобы команды и ссылки не зависели от судьбы рабочей ветки:
+
+```bash
+git clone --branch profile-panel-article-v1 --single-branch https://github.com/bad4iz/unit-test-article.git
+cd unit-test-article/examples/profile-panel
+npm ci
+npm test
+npm run typecheck
 ```
 
-В `find` передаю сам `UserCard`. Получаю его пропсы и проверяю, что панель передала нужное имя и функцию выбора. Никакого DOM для этого не понадобилось.
+Подойдёт Node.js 22 от версии 22.12 или Node.js 24. Версии зависимостей закреплены: React 19.2.4, Shallowly 1.1.1 и Vitest 4.0.18. В примере шесть проверок: три shallow-теста панели, два теста setup-хука и один DOM-тест. Конфиги TypeScript и JSX уже внутри.
 
-Теперь тот самый случай с id:
-
-```tsx
-it('передаёт id выбранного профиля в родительский callback', () => {
-  const onProfileSelected = vi.fn();
-  const wrapper = shallow(<ProfilePanel onProfileSelected={onProfileSelected} />);
-  const onSelect: unknown = wrapper.find(UserCard).prop('onSelect');
-
-  if (typeof onSelect !== 'function') {
-    throw new TypeError('Ожидалась функция UserCard.onSelect');
-  }
-
-  onSelect();
-
-  expect(onProfileSelected).toHaveBeenCalledExactlyOnceWith('grace');
-});
-```
-
-Вытащил переданную функцию, вызвал, проверил аргумент. `unknown` и проверка `typeof` нужны, чтобы не затыкать TypeScript через `any`: из обёртки мы достаём проп по имени, его ещё надо проверить перед вызовом.
-
-Здесь никто не нажимает кнопку. Проверяется функция, которую **панель передала карточке**. Вызовет ли карточка эту функцию при клике — отдельный вопрос, до него сейчас дойдём.
-
-Если в панели подменить аргумент на имя:
-
-```tsx
-onSelect={() => onProfileSelected(state.profile.name)}
-```
-
-типизация это пропустит, а тест будет ждать `grace` и получит `Grace Hopper`. Вот ради такой ошибки и писалась проверка.
-
-## Пока грузится, карточки быть не должно
-
-Для следующего сценария достаточно поменять результат мока:
-
-```tsx
-it('показывает загрузку вместо карточки', () => {
-  mockedUseProfile.mockReturnValue({ status: 'loading' });
-
-  const wrapper = shallow(<ProfilePanel onProfileSelected={vi.fn()} />);
-
-  expect(wrapper.textInline()).toBe('<p>Loading profile...</p>');
-  expect(wrapper.find('p').prop('role')).toBe('status');
-  expect(wrapper.find(UserCard).exists()).toBe(false);
-});
-```
-
-`textInline()` даёт компактное представление элементов. Это удобно для короткой ветки вроде этой. Отдельно проверяю `role`, потому что в такую строку атрибуты не попадают.
-
-Состояние `loading` я выставил сам. Этот тест не проверяет, закончится ли загрузка и обновит ли React экран. Его задача уже: при таком результате хука панель должна вернуть сообщение, а не карточку.
-
-Весь большой компонент в строку для сравнения я бы без необходимости не превращал. Добавишь лишний контейнер — придётся править ожидание, даже если нужное поведение осталось прежним. Здесь всего один `p`, а имя и callback мы выше проверили отдельно.
-
-В примере есть ещё короткая проверка самой границы:
-
-```tsx
-it('оставляет UserCard на границе, не выполняя его useState', () => {
-  const wrapper = shallow(<ProfilePanel onProfileSelected={vi.fn()} />);
-
-  expect(wrapper.find(UserCard).textInline()).toBe('<UserCard />');
-  expect(wrapper.find('button').exists()).toBe(false);
-});
-```
-
-В исходнике `UserCard` кнопки есть. В результате этого shallow-рендера их нет: тело карточки не выполнялось. Это полезно один раз увидеть руками, чтобы потом не пытаться через `find('button')` достать кнопку из её внутренностей.
-
-## А кнопку кто проверит
-
-Представим, что в самой карточке забыли повесить `onSelect` на кнопку. Все предыдущие проверки панели продолжат проходить. Панель свою часть работы выполнила: передала функцию. Потеряли её уже дальше.
-
-Для этой связи нужен рендер с настоящим `UserCard`. В соседнем файле `ProfilePanel.dom.test.tsx` использую React Testing Library и `user-event`. Хук здесь тоже настоящий, поэтому профиль снова Ada, а не Grace.
-
-```tsx
-// @vitest-environment jsdom
-
-import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { afterEach, expect, it, vi } from 'vitest';
-
-import { ProfilePanel } from './ProfilePanel';
-
-afterEach(cleanup);
-
-it('раскрывает и скрывает детали карточки по нажатию кнопки', async () => {
-  const user = userEvent.setup();
-  render(<ProfilePanel onProfileSelected={vi.fn()} />);
-
-  expect(screen.getByRole('heading', { name: 'Ada Lovelace' })).toBeTruthy();
-  expect(screen.queryByText('Profile details')).toBeNull();
-
-  await user.click(screen.getByRole('button', { name: 'Show details' }));
-  expect(screen.getByText('Profile details')).toBeTruthy();
-
-  await user.click(screen.getByRole('button', { name: 'Hide details' }));
-  expect(screen.queryByText('Profile details')).toBeNull();
-});
-
-it('передаёт id профиля после нажатия Select profile', async () => {
-  const user = userEvent.setup();
-  const onProfileSelected = vi.fn();
-  render(<ProfilePanel onProfileSelected={onProfileSelected} />);
-
-  await user.click(screen.getByRole('button', { name: 'Select profile' }));
-
-  expect(onProfileSelected).toHaveBeenCalledExactlyOnceWith('ada');
-});
-```
-
-В конфиге по умолчанию стоит окружение `node`; комментарий в начале этого файла включает `jsdom`. Shallow-тесты и DOM-тесты разнесены, подмена `useProfile` остаётся в первом файле.
-
-Теперь React выполняет карточку, у неё работает `useState`, после клика меняется содержимое DOM. `user-event` [моделирует взаимодействие пользователя](https://testing-library.com/docs/user-event/intro/), поэтому здесь проверяется путь от кнопки до обработчика. Браузер при этом не запускается: это DOM-тест в jsdom, не E2E.
-
-Именно этот тест упадёт, если забыть `onClick={onSelect}` у кнопки выбора. Для проверки одного аргумента в родительском callback мне не нужен весь этот путь. А для проверки самой связи с кнопкой он как раз нужен.
-
-## Что я бы забрал в рабочий проект
-
-Начал бы с компонента, у которого есть понятное ветвление, несколько пропсов для дочернего компонента и обработчик. Так проще увидеть пользу изоляции и понять её цену. В нашем примере цена небольшая: один замоканный хук. Если для двух проверок получается простыня из двадцати моков, стоит ещё раз посмотреть, удачно ли выбрана граница теста и сколько всего делает компонент.
-
-Мне от теста панели нужен конкретный ответ: при таких данных она передала такое имя, показала нужную ветку и вызвала обработчик с нужным id. Для состояния карточки и её кнопок рядом есть DOM-проверки.
-
-Если хочется повторить на своём компоненте, [Shallowly ставится из npm](https://www.npmjs.com/package/shallowly), а методы обёртки описаны в [русском справочнике API](https://github.com/bad4iz/shallowly/blob/main/docs/index.ru.md).
-
-Для начала можно специально сломать этот пример: передать имя вместо id, затем вернуть id и убрать `onClick` у кнопки выбора. Прогон хорошо показывает, какую часть работы проверяет каждый файл.
+Исходный компонент сохранён в `src/ProfilePanel.before.tsx`, результат — в `src/ProfilePanel.tsx` и `src/useSetupProfilePanel.ts`. Можно открыть их рядом и посмотреть, что именно переехало при рефакторинге. Методы Shallowly описаны в [русском справочнике API](https://github.com/bad4iz/shallowly/blob/main/docs/index.ru.md).
