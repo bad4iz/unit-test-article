@@ -3,7 +3,8 @@ status: published
 habr_url: https://habr.com/ru/articles/419533/
 published_at: 2018-08-07
 updated_at: 2026-10-17
-synced_at: 2026-10-17
+draft_saved_at: 2026-10-17
+synced_at: 2026-10-22
 task_branch: codex/edit-null-comparison-article
 source_author: Abinav Seelan
 cover: assets/null-comparison/illustration.jpg
