@@ -31,10 +31,13 @@
 | Статья | Исходник | Состояние |
 | --- | --- | --- |
 | Как начать писать тесты в проекте, где их не было | [06_testing_legacy_project.md](06_testing_legacy_project.md) | Черновик от 2026-10-23; полный текст в репозитории, [на Хабре только заготовка](https://habr.com/ru/articles/1098488/) |
+| Хватит пихать всё в it.each. Это потом вам дебажить | [08_each_test_readability.md](08_each_test_readability.md) | Черновик от 2026-10-23; полный текст в репозитории, [на Хабре только заготовка](https://habr.com/ru/articles/1098686/) |
 
-Закреплённая ветка статьи: `docs/testing-legacy-project`. [Редакторские заметки](notes/06_testing_legacy_project.md) содержат тезисы, источники и вопросы к доработке. [Запускаемый пример](examples/legacy-order) показывает первые проверки и два шага рефакторинга с сохранением поведения: 28 тестов на Node.js, без внешних зависимостей.
+Статья о внедрении тестов закреплена за веткой `docs/testing-legacy-project`. [Редакторские заметки](notes/06_testing_legacy_project.md) содержат тезисы, источники и вопросы к доработке. [Запускаемый пример](examples/legacy-order) показывает первые проверки и два шага рефакторинга с сохранением поведения: 28 тестов на Node.js, без внешних зависимостей.
 
-Остальные новые материалы ведутся в своих ветках: [Shallowly и RTL](https://github.com/bad4iz/unit-test-article/blob/docs/shallowly-vs-rtl-article/04_shallowly_vs_rtl.md), [mockDefault](https://github.com/bad4iz/unit-test-article/blob/docs/mock-default-test-setup/05_mock_default.md).
+Статья про `it.each` закреплена за веткой `docs/each-test-readability`. [Пример](examples/each-readability) сравнивает одну таблицу с тремя явными `it`: шесть тестов на Vitest 4.0.18. В [редакторских заметках](notes/08_each_test_readability.md) — границы аргумента и план отдельной статьи про один `expect`.
+
+Остальные новые материалы ведутся в своих ветках: [Shallowly и RTL](https://github.com/bad4iz/unit-test-article/blob/docs/shallowly-vs-rtl-article/04_shallowly_vs_rtl.md), [mockDefault](https://github.com/bad4iz/unit-test-article/blob/docs/mock-default-test-setup/05_mock_default.md), [первый минимальный тест](https://github.com/bad4iz/unit-test-article/blob/docs/first-test-smoke/07_first_test_smoke.md).
 
 ## Архивные черновики
 
