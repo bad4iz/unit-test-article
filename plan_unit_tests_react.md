@@ -22,7 +22,7 @@
 
 Черновики [Shallowly и RTL](https://habr.com/ru/articles/1098414/) и [mockDefault](https://habr.com/ru/articles/1098430/) ведутся в ветках `docs/shallowly-vs-rtl-article` и `docs/mock-default-test-setup`.
 
-**[Как начать писать тесты в проекте, где их не было](06_testing_legacy_project.md)** — рабочий черновик, ветка `docs/testing-legacy-project`. Полный текст хранится в проекте; [на Хабре](https://habr.com/ru/articles/1098488/) только заголовок, пометка о доработке и ссылка на исходник.
+**[И хочется, и колется: как начать писать тесты, когда в проекте много сложных букав](06_testing_legacy_project.md)** — рабочий черновик, ветка `docs/testing-legacy-project`. Полный текст хранится в проекте; [на Хабре](https://habr.com/ru/articles/1098488/) только заголовок, пометка о доработке и ссылка на исходник.
 
 - Начать с текущей задачи и сохранить нужное поведение первыми проверками.
 - Показать Extract Function и разделение запроса с изменением на учебном расчёте заказа.
