@@ -1,11 +1,11 @@
 <!--
 status: draft
 created_at: 2026-10-23
-habr_url: pending
-draft_saved_at: pending
+habr_url: https://habr.com/ru/articles/1098430/
+draft_saved_at: 2026-10-23
 task_branch: docs/mock-default-test-setup
-example_ref: pending
-cover_url: pending
+example_ref: c1b2a43ca24cddd883a7816078b9995dc4f2e3ed
+cover_url: https://habrastorage.org/extt/c7/f1/0f/c7f10f2367f331d675c977ece86e728a.jpg
 audience: Фронтенд
 hubs: JavaScript, Тестирование веб-сервисов
 format: Туториал
@@ -253,11 +253,13 @@ const { profile } = await mockDefault();
 
 ## Запустить пример
 
-[Полный пример с конфигурацией и lockfile](https://github.com/bad4iz/unit-test-article/tree/docs/mock-default-test-setup/examples/mock-default). Нужен Node.js 22.12+ в ветке 22 либо Node.js 24.
+[Полный пример с конфигурацией и lockfile](https://github.com/bad4iz/unit-test-article/tree/c1b2a43ca24cddd883a7816078b9995dc4f2e3ed/examples/mock-default). Нужен Node.js 22.12+ в ветке 22 либо Node.js 24.
 
 ```bash
 git clone --branch docs/mock-default-test-setup https://github.com/bad4iz/unit-test-article.git
-cd unit-test-article/examples/mock-default
+cd unit-test-article
+git checkout c1b2a43ca24cddd883a7816078b9995dc4f2e3ed
+cd examples/mock-default
 npm ci
 npm test
 ```

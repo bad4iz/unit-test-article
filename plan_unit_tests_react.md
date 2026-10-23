@@ -26,7 +26,7 @@
 
 **[Зачем Shallowly, если есть React Testing Library?](https://habr.com/ru/articles/1098414/)** — черновик на Хабре, сохранён 2026-10-23. Исходник и примеры: ветка `docs/shallowly-vs-rtl-article`.
 
-**mockDefault вместо beforeEach: подготовка теста без скрытых условий** — [новый черновик](05_mock_default.md), ветка `docs/mock-default-test-setup`. Восемь запускаемых тестов в [examples/mock-default](examples/mock-default). Раскрывает явный Arrange, свежие данные, точечные переопределения, глобальный сброс моков и границы отказа от lifecycle-хуков. Готовится к сохранению на Хабре.
+**[mockDefault вместо beforeEach: подготовка теста без скрытых условий](https://habr.com/ru/articles/1098430/)** — [исходник](05_mock_default.md), ветка `docs/mock-default-test-setup`. Восемь запускаемых тестов в [examples/mock-default](examples/mock-default). Раскрывает явный Arrange, свежие данные, точечные переопределения, глобальный сброс моков и границы отказа от lifecycle-хуков. Черновик сохранён на Хабре 2026-10-23.
 
 ## Темы серии
 
