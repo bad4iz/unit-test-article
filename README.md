@@ -31,10 +31,13 @@
 | Статья | Исходник | Состояние |
 | --- | --- | --- |
 | Как начать писать тесты в проекте, где их не было | [06_testing_legacy_project.md](06_testing_legacy_project.md) | Черновик от 2026-10-23; полный текст в репозитории, [на Хабре только заготовка](https://habr.com/ru/articles/1098488/) |
+| Первый it: сначала проверяем, что всё завелось | [07_first_test_smoke.md](07_first_test_smoke.md) | Черновик от 2026-10-23; полный текст в репозитории, [на Хабре только заготовка](https://habr.com/ru/articles/1098522/) |
 
 Закреплённая ветка статьи: `docs/testing-legacy-project`. [Редакторские заметки](notes/06_testing_legacy_project.md) содержат тезисы, источники и вопросы к доработке. [Запускаемый пример](examples/legacy-order) показывает первые проверки и два шага рефакторинга с сохранением поведения: 28 тестов на Node.js, без внешних зависимостей.
 
 Остальные новые материалы ведутся в своих ветках: [Shallowly и RTL](https://github.com/bad4iz/unit-test-article/blob/docs/shallowly-vs-rtl-article/04_shallowly_vs_rtl.md), [mockDefault](https://github.com/bad4iz/unit-test-article/blob/docs/mock-default-test-setup/05_mock_default.md).
+
+Статья о первом `it` закреплена за веткой `docs/first-test-smoke`. В [учебном примере](examples/first-test-smoke) шесть проверенных тестов: минимальный запуск setup-хука и компонента, затем конкретные сценарии. Эксперимент с ошибочным именем показывает, почему одного smoke недостаточно. [Редакторские заметки](notes/07_first_test_smoke.md).
 
 ## Архивные черновики
 
