@@ -17,4 +17,3 @@ Style/medium: refined editorial pen and ink drawing, subtle watercolor fills on 
 Composition: large concise title above the scene, developer on the left, modules across the center-right tabletop. Keep generous margins and clear visual hierarchy. No arrows claiming performance superiority; this is a debugging story.
 Text verbatim: title "Где сломалось?" and exactly these three module labels: "Компонент", "Дочерний", "Мок". No additional words.
 Constraints: spell Cyrillic exactly and legibly, each module gets its own label. No logos, no robots, no AI references, no space, no speed/seconds/benchmarks or fabricated numeric data, no villains. Opaque light paper background, 16:9 landscape.
-
