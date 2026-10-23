@@ -1,0 +1,20 @@
+{
+  "name": "first-test-smoke-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Учебный пример первого smoke-теста и его ограничений.",
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "19.2.4"
+  },
+  "devDependencies": {
+    "shallowly": "1.1.2",
+    "vitest": "4.0.18"
+  }
+}
