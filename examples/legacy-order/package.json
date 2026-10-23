@@ -1,0 +1,13 @@
+{
+  "name": "legacy-order-testing-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Учебный пример первых тестов и небольших рефакторингов расчёта заказа.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
