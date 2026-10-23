@@ -40,7 +40,7 @@
 | Статья | Исходник | Состояние |
 | --- | --- | --- |
 | Зачем Shallowly, если есть React Testing Library? | `04_shallowly_vs_rtl.md`, ветка `docs/shallowly-vs-rtl-article` | [Черновик на Хабре](https://habr.com/ru/articles/1098414/), сохранён 2026-10-23 |
-| mockDefault вместо beforeEach: подготовка теста без скрытых условий | [05_mock_default.md](05_mock_default.md), ветка `docs/mock-default-test-setup` | [Черновик на Хабре](https://habr.com/ru/articles/1098430/), сохранён 2026-10-23 |
+| beforeEach и afterEach — антипаттерн. Пора выкинуть их из ваших тестов | [05_mock_default.md](05_mock_default.md), ветка `docs/mock-default-test-setup` | [Черновик на Хабре](https://habr.com/ru/articles/1098430/), сохранён 2026-10-23 |
 
 [Пример mockDefault](examples/mock-default) содержит восемь проверенных тестов: основные сценарии, вариант с lifecycle-хуками для сравнения и демонстрацию сброса моков. Воспроизводимый бенчмарк Shallowly ведётся [отдельной задачей №24](https://github.com/bad4iz/shallowly/issues/24).
 

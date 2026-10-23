@@ -14,7 +14,7 @@ tags: mockDefault, Vitest, JavaScript, unit testing, моки, тестиров�
 excerpt: Открываешь упавший тест, а откуда взялись его данные — непонятно. Разбираю свой подход: mockDefault() в начале Arrange, точечные изменения сценария и автоматический сброс моков. С рабочими примерами и ловушкой разовых ответов.
 -->
 
-# mockDefault вместо beforeEach: подготовка теста без скрытых условий
+# beforeEach и afterEach — антипаттерн. Пора выкинуть их из ваших тестов
 
 ![Откуда в тесте эти данные? Подготовка сценария через mockDefault](assets/mock-default/cover-body.jpg)
 
@@ -226,6 +226,52 @@ export default defineConfig({
 При этом служебную очистку убирать не предлагаю. Размонтирование React-дерева, возврат настоящих таймеров, закрытие временного ресурса — работа тестового окружения. Например, `afterEach(cleanup)` можно зарегистрировать в общем `setupFiles`, если выбранная конфигурация сама не подключает очистку. Это не скрытые условия конкретного сценария.
 
 Для интеграционных тестов запуск дорогого ресурса на группу через `beforeAll`/`afterAll` тоже может быть разумным. Но данные каждого сценария всё равно должны быть изолированы. Моё правило про явный Arrange не делает lifecycle-хуки запрещённой технологией во всём проекте.
+
+## Запретить хуки можно прямо в ESLint
+
+Чтобы не ловить очередной `beforeEach` руками на ревью, это соглашение можно закрепить линтером. Причём писать своё правило не придётся:
+
+- В [`eslint-plugin-jest` есть `jest/no-hooks`](https://github.com/jest-community/eslint-plugin-jest/blob/main/docs/rules/no-hooks.md).
+- В [`@vitest/eslint-plugin` есть `vitest/no-hooks`](https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/no-hooks.md).
+
+Оба правила запрещают вызовы `beforeEach`, `beforeAll`, `afterEach` и `afterAll`. В документации Jest среди причин прямо указано общее состояние между тестами, а вместо хуков показаны обычные функции подготовки, которые вызываются внутри `it`. То есть сам подход давно существует; `mockDefault` — моё название для такой функции.
+
+В `recommended` обоих плагинов `no-hooks` не включён. Запрет надо выбрать явно. Для Vitest минимальная настройка выглядит так:
+
+```bash
+npm install --save-dev eslint @vitest/eslint-plugin
+```
+
+```javascript
+// eslint.config.mjs
+import vitest from '@vitest/eslint-plugin';
+
+export default [
+  {
+    files: ['src/**/*.test.js'],
+    plugins: { vitest },
+    rules: {
+      'vitest/no-hooks': 'error',
+    },
+  },
+];
+```
+
+Это [flat config для ESLint 9+](https://github.com/vitest-dev/eslint-plugin-vitest#usage). В существующем проекте такой блок добавляется к остальной конфигурации. Шаблон `files` нужно подогнать под свои **юнит-тесты**: общий `setupFiles` со служебной очисткой и интеграционные тесты с отдельными ресурсами под этот запрет не подводим. Конфигурация выше рассчитана на JavaScript, как и примеры статьи; для TypeScript нужен ещё настроенный парсер.
+
+Для Jest устанавливаем `eslint-plugin-jest`, импортируем `jest` из него, регистрируем `plugins: { jest }` и включаем `'jest/no-hooks': 'error'`.
+
+У обоих правил есть опция `allow`. Например, `['error', { allow: ['afterEach', 'afterAll'] }]` оставит разрешёнными хуки очистки, а `beforeEach` и `beforeAll` запретит. Линтер при этом не разбирается, что именно спрятано в разрешённом хуке: служебная очистка или проверка бизнес-сценария. Поэтому область действия правила всё равно надо выбрать осознанно.
+
+У Testing Library есть более точечное правило — [`testing-library/no-render-in-lifecycle`](https://github.com/testing-library/eslint-plugin-testing-library/blob/main/docs/rules/no-render-in-lifecycle.md) из `eslint-plugin-testing-library`. Оно запрещает `render` и пользовательские обёртки над ним в `beforeEach` и `beforeAll`: рендер должен быть ближе к проверкам. Причём это правило уже включено в пресет `react`. Полного запрета хуков оно не вводит.
+
+Рядом есть ещё несколько правил, которые помогают не превращать тест в квест:
+
+- [`vitest/no-conditional-expect`](https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/no-conditional-expect.md) запрещает условные проверки. Если `expect` спрятан под `if`, тест может стать зелёным, так до него и не добравшись.
+- [`vitest/no-conditional-in-test`](https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/no-conditional-in-test.md) запрещает условную логику внутри теста. Разные сценарии проще разобрать, когда у каждого свой `it` или строка в `it.each`.
+- [`vitest/max-nested-describe`](https://github.com/vitest-dev/eslint-plugin-vitest/blob/main/docs/rules/max-nested-describe.md) ограничивает глубину вложенных групп. Например, `['error', { max: 2 }]` не даст построить ещё пять этажей `describe`.
+
+В `eslint-plugin-jest` есть [те же три правила с префиксом `jest/`](https://github.com/jest-community/eslint-plugin-jest#rules). Они не заставят написать хороший тест, но часть косяков поймают ещё до ревью. Сам `mockDefault()` линтер за нас не вызовет — явная подготовка остаётся соглашением команды.
 
 ## Как не испортить mockDefault
 
