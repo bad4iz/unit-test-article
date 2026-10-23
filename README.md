@@ -20,9 +20,9 @@
 
 [Зачем Shallowly, если есть React Testing Library?](04_shallowly_vs_rtl.md) — черновик от 23 октября 2026 года. Разбираем ручную изоляцию детей в RTL, поддержку моков, поиск причины падения и расходы на выполнение теста. Два сопоставимых варианта проверки панели и отдельный тест с настоящими детьми лежат в [examples/isolated-panel](examples/isolated-panel). Все семь тестов проходят на закреплённых зависимостях, включая Shallowly 1.1.2. Замеров скорости пока нет.
 
-Подготовлены [обложка](assets/shallowly-vs-rtl/cover-habr.jpg) и [иллюстрация о дебаге](assets/shallowly-vs-rtl/debugging-body.jpg). Статья сохранена в репозитории, на Хабр не перенесена. Закреплённая ветка: `docs/shallowly-vs-rtl-article`.
+Подготовлены [обложка](assets/shallowly-vs-rtl/cover-habr.jpg) и [иллюстрация о дебаге](assets/shallowly-vs-rtl/debugging-body.jpg). Статья сохранена [черновиком на Хабре](https://habr.com/ru/articles/1098414/) 23 октября 2026 года. Закреплённая ветка: `docs/shallowly-vs-rtl-article`.
 
-Практический черновик «React 19: разделяем логику и разметку, тестируем с Shallowly и Vitest» подготовлен отдельно в [PR #2](https://github.com/bad4iz/unit-test-article/pull/2). Его исходник и пример остаются в ветке `codex/shallowly-practical-article`.
+Статья [«React 19: разделяем логику и разметку, тестируем с Shallowly и Vitest»](https://habr.com/ru/articles/1095628/) опубликована на Хабре. Её исходник подготовлен отдельно в [PR #2](https://github.com/bad4iz/unit-test-article/pull/2). Его исходник и пример остаются в ветке `codex/shallowly-practical-article`.
 
 ## Архивные черновики
 

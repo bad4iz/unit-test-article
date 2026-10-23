@@ -1,6 +1,11 @@
 <!--
 status: draft
 created_at: 2026-10-23
+habr_url: https://habr.com/ru/articles/1098414/
+draft_saved_at: 2026-10-23
+example_ref: 03499aa5425194bac5eb5a61b53f653abd05e6b7
+cover_url: https://habrastorage.org/extt/94/e1/d9/94e1d9371e78d05ed811e8689f9fdd88.jpg
+illustration_url: https://habrastorage.org/extt/db/98/2f/db982feefba46f06b810d6780d58be93.jpg
 task_branch: docs/shallowly-vs-rtl-article
 example: examples/isolated-panel
 cover: assets/shallowly-vs-rtl/cover-habr.jpg
@@ -241,11 +246,14 @@ Shallowly не избавляет от всех подмен. Зависимос
 
 ## Код можно прогнать
 
-Рядом со статьёй лежит [полный пример](examples/isolated-panel). В нём одинаковые сценарии для RTL и Shallowly: разметка панели, данные для детей и загрузка. Отдельно — DOM-тест с настоящими дочерними компонентами.
+В репозитории статьи лежит [полный пример](https://github.com/bad4iz/unit-test-article/tree/03499aa5425194bac5eb5a61b53f653abd05e6b7/examples/isolated-panel). В нём одинаковые сценарии для RTL и Shallowly: разметка панели, данные для детей и загрузка. Отдельно — DOM-тест с настоящими дочерними компонентами.
 
-Из корня репозитория статей:
+Чтобы получить именно эту версию примера:
 
 ```bash
+git clone https://github.com/bad4iz/unit-test-article.git
+cd unit-test-article
+git checkout 03499aa5425194bac5eb5a61b53f653abd05e6b7
 cd examples/isolated-panel
 npm ci
 npm test
