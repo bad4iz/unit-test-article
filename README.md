@@ -16,6 +16,16 @@
 
 В начале каждого опубликованного исходника есть HTML-комментарий с адресом статьи, датами публикации и синхронизации, статусом. При переносе в Markdown сохранены текст, код, таблица, ссылки и изображения; уровни заголовков приведены к обычной структуре `#` → `##` → `###`. Изображения используют исходные адреса Habr Storage.
 
+## Рабочие черновики
+
+| Статья | Исходник | Состояние |
+| --- | --- | --- |
+| Как начать писать тесты в проекте, где их не было | [06_testing_legacy_project.md](06_testing_legacy_project.md) | Черновик от 2026-10-23; полный текст в репозитории, [на Хабре только заготовка](https://habr.com/ru/articles/1098488/) |
+
+Закреплённая ветка статьи: `docs/testing-legacy-project`. [Редакторские заметки](notes/06_testing_legacy_project.md) содержат тезисы, источники и вопросы к доработке. [Запускаемый пример](examples/legacy-order) показывает первые проверки и два шага рефакторинга с сохранением поведения: 28 тестов на Node.js, без внешних зависимостей.
+
+Остальные новые материалы ведутся в своих ветках: [практика с Shallowly](https://github.com/bad4iz/unit-test-article/blob/codex/shallowly-practical-article/03_shallowly_vitest_practice.md), [Shallowly и RTL](https://github.com/bad4iz/unit-test-article/blob/docs/shallowly-vs-rtl-article/04_shallowly_vs_rtl.md), [mockDefault](https://github.com/bad4iz/unit-test-article/blob/docs/mock-default-test-setup/05_mock_default.md).
+
 ## Архивные черновики
 
 Оставлены на прежних местах для истории. Они не соответствуют текущим публикациям и не должны заменять актуальные исходники при следующем редактировании.
@@ -33,7 +43,7 @@
 - [opponents_from_comments.md](opponents_from_comments.md) — рабочие заметки по возражениям читателей; это заготовки для проверки и обсуждения, а не готовые выводы статьи.
 - [author_signature.md](author_signature.md) — заготовка авторской подписи; факты и сроки в ней нужно проверять перед использованием.
 
-Ближайшая новая статья — практический разбор изолированного теста React 19 с Shallowly и Vitest. Основа для примеров уже есть в [examples/component-contracts](https://github.com/bad4iz/shallowly/tree/main/examples/component-contracts). Воспроизводимый бенчмарк ведётся [отдельной задачей №24](https://github.com/bad4iz/shallowly/issues/24).
+Практический разбор React 19 с Shallowly и Vitest уже [опубликован](https://habr.com/ru/articles/1095628/). Новый черновик посвящён постепенному внедрению тестов в существующий проект. Воспроизводимый бенчмарк Shallowly ведётся [отдельной задачей №24](https://github.com/bad4iz/shallowly/issues/24).
 
 ## Как обновлять статьи
 
