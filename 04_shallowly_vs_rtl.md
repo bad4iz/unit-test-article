@@ -12,7 +12,7 @@ cover: assets/shallowly-vs-rtl/cover-habr.jpg
 feed_excerpt: Хочу проверить один React-компонент, а сначала приходится разбираться с зависимостями его детей. Сравниваю изолированные тесты через React Testing Library и Shallowly: моки, их поддержка, поиск причины падения и работа, которую выполняет тест.
 -->
 
-# Зачем Shallowly, если есть React Testing Library?
+# React Testing Library — не для юнит-тестов. А что тогда использовать?
 
 ![Разработчик пытается проверить одну панель, окружённую дочерними компонентами и моками](assets/shallowly-vs-rtl/cover-body.jpg)
 
