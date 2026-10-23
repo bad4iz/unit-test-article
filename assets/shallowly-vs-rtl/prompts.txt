@@ -1,0 +1,20 @@
+Обложка
+
+Use case: illustration-story
+Asset type: editorial cover for a Russian developer article, wide 16:9 landscape.
+Primary request: A warm light editorial illustration of a developer who wanted to test just one React component but discovers several child components and handwritten mock patches. Thoughtful lightly puzzled expression, not angry. The main physical card/module labeled "ProfilePanel" sits on a workbench, wires visibly fan out from it to several smaller child cards. Two child cards are covered by plain paper patches labeled "mock". The developer traces one wire with a finger.
+Style/medium: refined pen and ink line illustration with muted watercolor fills on warm ivory textured paper; mature technical magazine drawing, warm ochre, restrained teal and terracotta, charcoal fine linework.
+Composition: clean wide landscape, generous breathing room, headline across the upper quarter, character and connected cards in the lower three quarters, the checked parent card is visually distinct with teal outline, children and paper patches smaller. Keep all meaningful content within generous safe margins so it remains legible after downscaling to 780x440.
+Text verbatim: large Russian headline "Хотел проверить один компонент". Card label "ProfilePanel". Small paper patches "mock". No other written text.
+Constraints: exact correct Cyrillic lettering, readable professional unobtrusive typography. No logos, no robots, no artificial intelligence imagery, no space themes, no performance numbers, no speeds, no graphs, no weapon imagery, no villain, no mocking of a particular testing library. Focus on debugging complexity rather than declaring a tool bad. No subtitles or tiny fake text. Opaque ivory background.
+
+Внутренняя иллюстрация
+
+Use case: illustration-story
+Asset type: internal editorial illustration for a Russian programming article, wide 16:9 landscape.
+Primary request: A developer debugging an isolated React component test, looking closely and tracing a cable through three physical modules on a workbench, trying to find which part is responsible for a red failing-test lamp. The red indicator lamp is prominent but small, not an alarm disaster. Three modules must be clearly distinct: the real parent module with teal border labeled "Компонент"; a smaller ordinary child module labeled "Дочерний"; a pale paper substitute covering a module silhouette labeled "Мок". They sit in a readable sequence connected by one continuous wire. Developer follows the wire thoughtfully, leaning forward with a magnifying glass or finger, restrained gently ironic mood.
+Style/medium: refined editorial pen and ink drawing, subtle watercolor fills on warm ivory paper, mature magazine illustration. Muted ochre, teal and terracotta, fine charcoal linework, light background.
+Composition: large concise title above the scene, developer on the left, modules across the center-right tabletop. Keep generous margins and clear visual hierarchy. No arrows claiming performance superiority; this is a debugging story.
+Text verbatim: title "Где сломалось?" and exactly these three module labels: "Компонент", "Дочерний", "Мок". No additional words.
+Constraints: spell Cyrillic exactly and legibly, each module gets its own label. No logos, no robots, no AI references, no space, no speed/seconds/benchmarks or fabricated numeric data, no villains. Opaque light paper background, 16:9 landscape.
+

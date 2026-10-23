@@ -1,0 +1,24 @@
+{
+  "name": "shallowly-rtl-isolated-panel-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Учебный пример: изоляция родительского компонента с Shallowly и React Testing Library.",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/react": "16.3.0",
+    "jsdom": "26.1.0",
+    "shallowly": "1.1.2",
+    "vitest": "4.0.18"
+  }
+}
