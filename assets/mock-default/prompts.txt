@@ -1,0 +1,9 @@
+Обложка
+
+Use case: illustration-story
+Asset type: editorial cover for a Russian software testing article, wide 16:9 landscape.
+Primary request: A warm thoughtful developer sits at a desk and studies a sheet of test code, trying to understand where its data came from. Some source notes are physically dispersed on a few separate tabbed sheets and sticky notes in the background; nearby, one open foreground sheet has the short exact code label "mockDefault()" and its small data notes are neatly gathered alongside. The visual tells a story of keeping test preparation close and explicit, without claiming that framework hooks are evil.
+Style/medium: sophisticated magazine pen-and-ink illustration with delicate watercolor fills on ivory paper, muted ochre, teal and terracotta, charcoal outlines, subtle paper texture. Natural adult developer, thoughtful mild bemusement, not an exaggerated comic.
+Composition: 16:9 landscape. Large clear headline across the top; character on one side, desk and sheets visible in foreground, ample breathing room. No wires, circuit boards or connected boxes: use a fresh desk, pages, tabs and handwritten-note visual story. Main organized page in foreground has a tasteful teal heading; the background scattered notes are ordinary, not dangerous or broken.
+Text verbatim: large Russian headline "Откуда в тесте эти данные?" and a single small code label "mockDefault()" on the foreground page. All other paper marks are simple nonlinguistic handwriting strokes and colored blocks, no other readable text. Spell the headline and code exactly. Leave generous safe margins so everything reads at 780x440.
+Constraints: no logos, robots, AI imagery, space themes, performance numbers, charts, red error symbols, alarms or villains. No other headings or captions. Opaque warm light background.
