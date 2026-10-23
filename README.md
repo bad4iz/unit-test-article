@@ -16,6 +16,12 @@
 
 В начале каждого опубликованного исходника есть HTML-комментарий с адресом статьи, датами публикации и синхронизации, статусом. При переносе в Markdown сохранены текст, код, таблица, ссылки и изображения; уровни заголовков приведены к обычной структуре `#` → `##` → `###`. Изображения используют исходные адреса Habr Storage.
 
+## Практический разбор
+
+[React 19: разделяем логику и разметку, тестируем с Shallowly и Vitest](03_shallowly_vitest_practice.md) — [публикация на Хабре](https://habr.com/ru/articles/1095628/). Показан исходный компонент без входных пропсов, вынос логики в setup-хук и отдельные проверки хука, разметки и взаимодействия. [Обложка](assets/shallowly-practice/cover-habr.jpg).
+
+Рядом лежит [запускаемый пример](examples/profile-panel): три shallow-теста панели, два теста setup-хука и один DOM-тест. Команды запуска используют постоянный тег `profile-panel-article-v3`.
+
 ## Рабочие черновики
 
 | Статья | Исходник | Состояние |
@@ -24,7 +30,7 @@
 
 Закреплённая ветка статьи: `docs/testing-legacy-project`. [Редакторские заметки](notes/06_testing_legacy_project.md) содержат тезисы, источники и вопросы к доработке. [Запускаемый пример](examples/legacy-order) показывает первые проверки и два шага рефакторинга с сохранением поведения: 28 тестов на Node.js, без внешних зависимостей.
 
-Остальные новые материалы ведутся в своих ветках: [практика с Shallowly](https://github.com/bad4iz/unit-test-article/blob/codex/shallowly-practical-article/03_shallowly_vitest_practice.md), [Shallowly и RTL](https://github.com/bad4iz/unit-test-article/blob/docs/shallowly-vs-rtl-article/04_shallowly_vs_rtl.md), [mockDefault](https://github.com/bad4iz/unit-test-article/blob/docs/mock-default-test-setup/05_mock_default.md).
+Остальные новые материалы ведутся в своих ветках: [Shallowly и RTL](https://github.com/bad4iz/unit-test-article/blob/docs/shallowly-vs-rtl-article/04_shallowly_vs_rtl.md), [mockDefault](https://github.com/bad4iz/unit-test-article/blob/docs/mock-default-test-setup/05_mock_default.md).
 
 ## Архивные черновики
 

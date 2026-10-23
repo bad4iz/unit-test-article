@@ -1,0 +1,30 @@
+{
+  "name": "shallowly-profile-panel-article",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Пример к статье: изолированные и DOM-тесты React-компонента.",
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/react": "16.3.0",
+    "@testing-library/user-event": "14.6.1",
+    "@types/node": "25.2.3",
+    "@types/react": "19.2.13",
+    "@types/react-dom": "19.2.3",
+    "jsdom": "26.1.0",
+    "shallowly": "1.1.1",
+    "typescript": "5.9.3",
+    "vitest": "4.0.18"
+  }
+}
